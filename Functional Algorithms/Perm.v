@@ -2,7 +2,8 @@ Require Import Nat.
 Require Import Arith.Le.
 Require Import Arith.Compare_dec.
 Require Import Lia.
-Require Import List.
+Require Import Lists.List.
+Require Import Bool.Bool.
 
 
 Locate "_<_". (* "x < y" := lt x y *)
@@ -87,24 +88,82 @@ Definition maybe_swap (al: list nat) : list nat :=
   | _ => al
   end.
 
-Example maybe_swap_123: maybe_swap [1; 2; 3] = [1; 2; 3].
+Notation "[ ]" := nil.
+Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
+
+
+Example maybe_swap_123: maybe_swap [ 1; 2; 3 ]= [ 1; 2; 3 ].
 Proof. reflexivity. Qed.
 
+Example maybe_swap_321: maybe_swap [ 3; 2; 1 ]= [ 2; 3; 1 ].
+Proof. reflexivity. Qed.
 
+Theorem maybe_swap_idemptotent: 
+  forall al, maybe_swap (maybe_swap al) = maybe_swap al.
+Proof.
+  intros [ | a [ | b al]]. simpl. try reflexivity. reflexivity.
+  destruct (a >? b) eqn:H1; simpl.
+  - destruct (b >? a) eqn:H2. simpl.
+    + Fail lia.
+  Abort.
 
+Print reflect.
 
+Check (1+2 = 3).
+Check (forall x: nat, exists y, x = y+y).
 
+Check iff_reflect : forall (P: Prop) (b : bool),
+  P <-> b = true -> reflect P b.
 
+Print Nat.eqb_eq.
 
+Lemma eqb_reflect: forall x y, reflect (x = y) (x =? y).
+Proof.
+  intros x y. apply iff_reflect. symmetry.
+  apply Nat.eqb_eq.
+Qed.
 
+Check Nat.ltb_lt.
 
+Lemma ltb_reflect: forall x y, reflect (x < y) (x <? y).
+Proof.
+  intros x y. apply iff_reflect. symmetry.
+  apply Nat.ltb_lt.
+Qed.
 
+Check Nat.leb_le.
+Lemma leb_reflect: forall x y, reflect (x <= y) (x <=? y).
+Proof.
+  intros x y. apply iff_reflect. symmetry.
+  apply Nat.leb_le.
+Qed.
 
+Check Nat.ltb_lt.
 
+Lemma gtb_reflect: forall x y, reflect (x > y) (x >? y).
+Proof.
+  intros x y. apply iff_reflect. symmetry.
+  apply Nat.ltb_lt.
+Qed.
 
+Lemma geb_reflect: forall x y, reflect (x >= y) (x >=? y).
+Proof.
+  intros x y. apply iff_reflect. symmetry.
+  apply Nat.leb_le.
+Qed.
 
+Example test_ltb1: (Nat.ltb 2 6) = true.
+Proof.
+  reflexivity.
+Qed.
 
-
+Example reflect_example1: forall a,
+  (if a <? 5 then a else 2) < 6.
+Proof.
+  intros a.
+  destruct (ltb_reflect a 5). lia.
+  Abort.
+(* Qed. *)
 
 
   
