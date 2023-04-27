@@ -71,7 +71,6 @@ Proof.
   apply Nat.lt_le_incl.
   auto.
   apply Nat.le_sub_l.
-  
 Qed.
 
 Theorem lia_example2:
@@ -161,9 +160,47 @@ Example reflect_example1: forall a,
   (if a <? 5 then a else 2) < 6.
 Proof.
   intros a.
-  destruct (ltb_reflect a 5). lia.
-  Abort.
-(* Qed. *)
+  destruct (ltb_reflect a 5). lia. lia.
+Qed.
+
+Example reflect_example2: forall a,
+  (if a <? 5 then a else 2) < 6.
+Proof.
+  intros a.
+  assert (R: reflect (a < 5) (a <? 5)) by apply ltb_reflect.
+  remember (a <? 5) as guard.
+  destruct R as [H|H] eqn:HR.
+  - lia.
+  - lia.
+Qed.
+
+Hint Resolve ltb_reflect leb_reflect gtb_reflect geb_reflect eqb_reflect :
+destruct.
 
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
