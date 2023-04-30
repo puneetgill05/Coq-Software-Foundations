@@ -1,4 +1,9 @@
 Require Export Basics.
+Require Import Compare_dec.
+Require Import PeanoNat.
+Require Import Unicode.Utf8.
+Require Import Arith.Le.
+Require Import Peano.
 
 Theorem add_0_r : forall n : nat,
   n + 0 = n.
@@ -113,7 +118,6 @@ Proof.
       reflexivity. }
 Qed.
 
-
 Theorem mult_0_plus' : forall n m : nat,
 (0 + n) * m = n * m.
 Proof.
@@ -144,6 +148,17 @@ Proof.
   simpl. rewrite IHn'. reflexivity.
 Qed.
 
+
+Theorem add_assoc'' : forall n m p : nat,
+  n + (m + p) = (n + m) + p.
+Proof.
+  intros n m p. induction n as [|n' IHn'].
+  - (* n = 0 *)
+  reflexivity.
+  - (* n = S n' *)
+  simpl. rewrite IHn'. reflexivity.
+Qed.
+
 Theorem add_shuffle3 : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
@@ -155,7 +170,70 @@ Proof.
   rewrite H. reflexivity.
 Qed.
 
-Theorem Sk_eq_1_plus_k: forall k: nat,
+Theorem mul_n_1 : forall n : nat,
+  n * 1 = n.
+Proof.
+  intros n. induction n as [| n' IHn'].
+  - reflexivity.
+  - simpl. rewrite -> IHn'. reflexivity.
+Qed.
+
+Lemma succ_R : forall m n : nat,
+  m * S n = m + m * n.
+Proof.
+  intros m n. induction m as [|m' IHm'].
+  - (* 0 * Sn = 0 + 0 * n *)
+    simpl. reflexivity.
+  - (* S m' * S n' = S m' + S m' * n *)
+    simpl. rewrite -> IHm'. rewrite add_shuffle3. 
+    reflexivity.
+Qed.
+
+Theorem mul_comm : forall m n : nat,
+  m * n = n * m.
+Proof.
+  intros m n.
+  induction n as [|n' IHn'].
+  - (* m * 0 = 0 * m *)
+  rewrite mul_0_r. reflexivity.
+  - (* m * S n' = S n' * m *)
+  simpl. rewrite succ_R. rewrite IHn'.
+  reflexivity.
+Qed.
+  
+Check leb.
+Check le_Sn_le.
+Check plus_n_O.
+Check PeanoNat.Nat.le_succ_r.
+
+Theorem p_0_le_p_m : ∀ p m : nat,
+  p + 0 ≤ p + m.
+Proof.
+  intros p m. induction p as [|p' IHp'].
+  - simpl. rewrite le_0_n. reflexivity.
+  - rewrite plus_Sn_m. simpl. rewrite PeanoNat.Nat.le_succ_l. simpl.  rewrite <- plus_n_O. 
+    rewrite IHp'.
+
+
+  - rewrite <- plus_n_O. induction m as [|m' IHm']. 
+    + rewrite <- plus_n_O. reflexivity.
+    + simpl. rewrite IHm'. simpl. rewrite plus_n_Sm.
+      auto. 
+    rewrite IHp'. rewrite add_0_r. rewrite <- IHp'. rewrite le_n_Sn. reflexivity.
+
+Qed.
+
+
+Theorem plus_leb_compact_l : ∀ n m p : nat,
+  n <=? m = true → (p + n) <=? (p + m) = true.
+Proof.
+  intros n m p. induction n as [| n' IHn'].
+  -  simpl.  . 
+  -  simpl.
+Qed.
+
+
+Theorem Sk_eq_1_plus_k: ∀ k: nat,
   S k = 1 + k.
 Proof.
   intros k.
