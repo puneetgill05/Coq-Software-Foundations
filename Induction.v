@@ -206,34 +206,36 @@ Check le_Sn_le.
 Check plus_n_O.
 Check PeanoNat.Nat.le_succ_r.
 
-Theorem p_0_le_p_m : ∀ p m : nat,
-  p + 0 ≤ p + m.
+
+Theorem Sp_le_Sp_plus_m: \u2200 p m : nat,
+  S p \u2264 S p + m.
+Proof.
+  intros p m. induction m as [|m' IHm'].
+  - rewrite <- plus_n_O. auto.
+  - simpl. rewrite -> IHm'. rewrite plus_Sn_m. rewrite plus_n_Sm. auto.
+
+
+Qed.
+
+Theorem p_0_le_p_m : \u2200 p m : nat,
+  p + 0 \u2264 p + m.
 Proof.
   intros p m. induction p as [|p' IHp'].
   - simpl. rewrite le_0_n. reflexivity.
-  - rewrite plus_Sn_m. simpl. rewrite PeanoNat.Nat.le_succ_l. simpl.  rewrite <- plus_n_O. 
-    rewrite IHp'.
-
-
-  - rewrite <- plus_n_O. induction m as [|m' IHm']. 
-    + rewrite <- plus_n_O. reflexivity.
-    + simpl. rewrite IHm'. simpl. rewrite plus_n_Sm.
-      auto. 
-    rewrite IHp'. rewrite add_0_r. rewrite <- IHp'. rewrite le_n_Sn. reflexivity.
-
+  - rewrite <- plus_n_O. rewrite <- Sp_le_Sp_plus_m. auto.
 Qed.
 
 
-Theorem plus_leb_compact_l : ∀ n m p : nat,
-  n <=? m = true → (p + n) <=? (p + m) = true.
+Theorem plus_leb_compact_l : \u2200 n m p : nat,
+  n <=? m = true \u2192 (p + n) <=? (p + m) = true.
 Proof.
-  intros n m p. induction n as [| n' IHn'].
-  -  simpl.  . 
-  -  simpl.
+  intros n m p. induction p as [| p' IHp'].
+  -  simpl. auto. 
+  -  simpl. apply IHp'.
 Qed.
 
 
-Theorem Sk_eq_1_plus_k: ∀ k: nat,
+Theorem Sk_eq_1_plus_k: \u2200 k: nat,
   S k = 1 + k.
 Proof.
   intros k.
